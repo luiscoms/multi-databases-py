@@ -1,0 +1,3 @@
+[submodule "whois-api"]
+	path = whois-api
+	url = https://github.com/luiscoms/whois-api.git
