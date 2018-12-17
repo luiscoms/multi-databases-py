@@ -1,1 +1,2 @@
 yoyo-migrations>=6.0,<6.1
+PyMySQL>0.9,<0.10
