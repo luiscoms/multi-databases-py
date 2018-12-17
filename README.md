@@ -1,46 +1,59 @@
 Multi Databases
 ===============
 
-Given 3 databases
+This solution has a CPF query service that makes available the personal data stored in `MySQL`.<br/>
+Each call in this service sends an event to an event queue on `RabbitMQ`.<br/>
+A worker processes these events and stores them in `MongoDB` and updates the last record in `Elasticsearch`.
 
-* **Very sensible database** - [mysql](#mysql)
-* **Light sensible database** - mongodb
-* **Fast database** - elasticsearch
+## Given 3 databases
 
-## <a name="mysql"></a>mysql
+* **Very sensible database** - [MySQL](#mysql)
+* **Light sensible database** - [MongoDB](#mongodb)
+* **Fast database** - [Elasticsearch](#elasticsearch)
 
-* CPF
-* Endereço
-* Nome
-* Lista de dívidas
+## <a name="mysql"></a>MySQL
 
-## <a name="mongodb"></a>mongodb
+It stores accounts data.
 
-(Score de credito - rating)
+## <a name="mongodb"></a>MongoDB
 
-* Idade
-* Lista de bens
-* Endereço
-* Fonte de renda
+It stores events related data.
 
-## <a name="elasticsearch"></a>elasticsearch
+## <a name="elasticsearch"></a>Elasticsearch
 
+It stores the latest event associated to an account.
 
-* Ultima consulta por cpf
-* Movimentação financeira
-* Ultima compra
+Running
+-------
 
+* Create `.env` file
 
+```bash
+MYSQL_ROOT_PASSWORD=example
+RABBITMQ_DEFAULT_PASS=example
+COMPOSE_FILE=docker-compose.yml:whois-api/nested-docker-compose.yml
+```
 
-Esta solução conta com um serviço de consulta por CPF que disponibiliza os dados da pessoa física armazenados no mysql.
-A cada consulta nesse serviço um evento é enviado para uma fila de eventos.
-Um worker processa esses eventos e armazena nomongodb e atualiza o ultimo registro no elasticsearch.
+* Run docker-compose
 
+```bash
+$ docker-compose up
+```
 
-/whois/<cpf>
+* Run database migration
 
+```bash
+$ virtualenv venv
+...
 
-/events/<cpf>
+$ source venv/bin/activate
 
-Serviço de consulta de eventos por CPF que disponibiliza os ultimos eventos relacionados a um cpf.
+(venv) $ pip install -r requirements.txt
+...
 
+(venv) $ yoyo apply -p
+Password for mysql://root@localhost/secure-database:
+... applied
+```
+
+* Call [whois-api](https://github.com/luiscoms/whois-api.git) endpoints
